@@ -2,6 +2,8 @@ package com.enterpriseflowsrepository.camel;
 
 import org.jetbrains.annotations.NotNull;
 
+import java.util.Locale;
+
 /**
  * Type of trace level.
  */
@@ -32,6 +34,14 @@ public enum TraceLevel {
       }
     }
     throw new IllegalArgumentException("Invalid trace level: '" + level + "'. Expected one of: info, warning, error, success.");
+  }
+
+  /**
+   * Get the expected EFR format.
+   * @return a EFR-friendly level format.
+   */
+  public @NotNull String toStatus() {
+    return name().toLowerCase();
   }
 
 }

@@ -4,10 +4,8 @@ import lombok.Getter;
 import lombok.Setter;
 import org.apache.camel.Consumer;
 import org.apache.camel.Processor;
-import org.apache.camel.spi.Metadata;
 import org.apache.camel.spi.UriEndpoint;
 import org.apache.camel.spi.UriParam;
-import org.apache.camel.spi.UriPath;
 import org.apache.camel.support.DefaultEndpoint;
 import org.jetbrains.annotations.NotNull;
 
@@ -18,9 +16,6 @@ import org.jetbrains.annotations.NotNull;
 @Getter @Setter
 public class EfrTraceEndpoint extends DefaultEndpoint {
 
-  @UriPath(description = "The type of status for the trace. Expects 'info', 'error', 'warning' and 'success'.")
-  @Metadata(required = true)
-  private String status;
   private final transient TraceLevel level;
 
   @UriParam(defaultValue = "true", description = "If true, the trace is marked as TECHNICAL. Otherwise, will be marked as BUSINESS.")

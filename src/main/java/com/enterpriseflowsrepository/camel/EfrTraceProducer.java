@@ -1,5 +1,8 @@
 package com.enterpriseflowsrepository.camel;
 
+import com.enterpriseflowsrepository.api.traces.beans.Trace;
+import com.enterpriseflowsrepository.camel.clients.TracesClient;
+import com.enterpriseflowsrepository.camel.traces.TracesHelper;
 import org.apache.camel.Exchange;
 import org.apache.camel.support.DefaultProducer;
 import org.jetbrains.annotations.NotNull;
@@ -15,26 +18,24 @@ public class EfrTraceProducer extends DefaultProducer {
   private static final Logger LOG = LoggerFactory.getLogger(EfrTraceProducer.class);
   private final EfrTraceEndpoint endpoint;
 
+  private final TracesClient client;
+
   public EfrTraceProducer(EfrTraceEndpoint endpoint) {
     super(endpoint);
     this.endpoint = endpoint;
+    this.client = TracesClient.initialize();
   }
 
   @Override
-  public void process(@NotNull Exchange exchange) throws Exception {
-    String status = endpoint.getStatus();
-    String body = exchange.getIn().getBody(String.class);
+  public void process(@NotNull Exchange exchange) {
+    LOG.info("Sending trace to EFR with status {}.", endpoint.getLevel());
 
-    // Ton comportement métier personnalisé
-    String traceMessage = String.format("[EFR-TRACE - %s] - Message: %s", status.toUpperCase(), body);
+    // Create a trace
+    Trace trace = TracesHelper.traceFromExchange(exchange, endpoint.getLevel());
 
-    //TODO implement a real sending...
+    //TODO accumulate traces before sending them.
 
-    switch (endpoint.getLevel()) {
-      case INFO -> LOG.info(traceMessage);
-      case WARNING -> LOG.warn(traceMessage);
-      case ERROR -> LOG.error(traceMessage);
-      case SUCCESS -> LOG.info("[SUCCESS] {}", traceMessage);
-    }
+    // Send to EFR
+    client.sendTrace(trace);
   }
 }

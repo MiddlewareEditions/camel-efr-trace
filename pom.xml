@@ -15,7 +15,13 @@
 
     <!-- Versions -->
     <camel.version>4.4.0</camel.version>
+    <efr-traces-openapi.version>3.1.3</efr-traces-openapi.version>
+
     <lombok.version>1.18.42</lombok.version>
+    <jetbrains-annotations.version>26.1.0</jetbrains-annotations.version>
+
+    <maven-source.version>3.4.0</maven-source.version>
+    <maven-javadoc.version>3.12.0</maven-javadoc.version>
   </properties>
 
   <licenses>
@@ -32,6 +38,11 @@
       <artifactId>camel-support</artifactId>
       <version>${camel.version}</version>
     </dependency>
+    <dependency>
+      <groupId>org.apache.camel</groupId>
+      <artifactId>camel-microprofile-config</artifactId>
+      <version>${camel.version}</version>
+    </dependency>
 
     <!-- Lombok -->
     <dependency>
@@ -42,8 +53,15 @@
     <dependency>
       <groupId>org.jetbrains</groupId>
       <artifactId>annotations</artifactId>
-      <version>26.0.2</version>
+      <version>${jetbrains-annotations.version}</version>
       <scope>compile</scope>
+    </dependency>
+
+    <!-- EFR -->
+    <dependency>
+      <groupId>com.enterpriseflowsrepository.api</groupId>
+      <artifactId>openapi-traces-client</artifactId>
+      <version>${efr-traces-openapi.version}</version>
     </dependency>
   </dependencies>
 
@@ -60,6 +78,35 @@
               <goal>generate-component</goal>
             </goals>
             <phase>process-classes</phase>
+          </execution>
+        </executions>
+      </plugin>
+
+
+      <!-- Sources -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-source-plugin</artifactId>
+        <version>${maven-source.version}</version>
+        <executions>
+          <execution>
+            <goals>
+              <goal>jar</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+
+      <!-- Javadoc -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-javadoc-plugin</artifactId>
+        <version>${maven-javadoc.version}</version>
+        <executions>
+          <execution>
+            <goals>
+              <goal>jar</goal>
+            </goals>
           </execution>
         </executions>
       </plugin>
