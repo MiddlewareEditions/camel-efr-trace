@@ -44,7 +44,7 @@
       <version>${camel.version}</version>
     </dependency>
 
-    <!-- Lombok -->
+    <!-- Annotations -->
     <dependency>
       <groupId>org.projectlombok</groupId>
       <artifactId>lombok</artifactId>
@@ -62,6 +62,13 @@
       <groupId>com.enterpriseflowsrepository.api</groupId>
       <artifactId>openapi-traces-client</artifactId>
       <version>${efr-traces-openapi.version}</version>
+    </dependency>
+
+    <!-- Others -->
+    <dependency>
+      <groupId>org.apache.commons</groupId>
+      <artifactId>commons-text</artifactId>
+      <version>1.15.0</version>
     </dependency>
   </dependencies>
 

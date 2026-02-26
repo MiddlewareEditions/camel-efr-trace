@@ -31,7 +31,7 @@ public class EfrTraceProducer extends DefaultProducer {
     LOG.info("Sending trace to EFR with status {}.", endpoint.getLevel());
 
     // Create a trace
-    Trace trace = TracesHelper.traceFromExchange(exchange, endpoint.getLevel());
+    Trace trace = TracesHelper.traceFromExchange(exchange, endpoint);
 
     //TODO accumulate traces before sending them.
 
