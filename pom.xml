@@ -4,9 +4,13 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
-  <groupId>com.enterpriseflowsrepository.camel</groupId>
+  <groupId>com.enterpriseflowsrepository</groupId>
   <artifactId>camel-efr-trace</artifactId>
   <version>0.0.1-SNAPSHOT</version>
+  <packaging>jar</packaging>
+
+  <description>Apache Camel-K connector to EFR</description>
+  <url>https://github.com/MiddlewareEditions/camel-efr-trace</url>
 
   <properties>
     <java.version>17</java.version>
@@ -21,8 +25,10 @@
     <lombok.version>1.18.42</lombok.version>
     <jetbrains-annotations.version>26.1.0</jetbrains-annotations.version>
 
+    <!-- Plugin versions -->
     <maven-source.version>3.4.0</maven-source.version>
     <maven-javadoc.version>3.12.0</maven-javadoc.version>
+    <maven-gpg.version>3.2.8</maven-gpg.version>
   </properties>
 
   <licenses>
@@ -75,6 +81,7 @@
 
   <build>
     <plugins>
+      <!-- Camel generator -->
       <plugin>
         <groupId>org.apache.camel</groupId>
         <artifactId>camel-package-maven-plugin</artifactId>
@@ -90,7 +97,7 @@
         </executions>
       </plugin>
 
-      <!-- Sources -->
+      <!-- Maven sources -->
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-source-plugin</artifactId>
@@ -104,7 +111,7 @@
         </executions>
       </plugin>
 
-      <!-- Javadoc -->
+      <!-- Maven javadoc -->
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-javadoc-plugin</artifactId>
@@ -117,26 +124,37 @@
           </execution>
         </executions>
       </plugin>
+
+      <!-- Central-Maven GPG -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-gpg-plugin</artifactId>
+        <version>${maven-gpg.version}</version>
+        <executions>
+          <execution>
+            <id>sign-artifacts</id>
+            <phase>verify</phase>
+            <goals>
+              <goal>sign</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
     </plugins>
   </build>
 
   <developers>
     <developer>
-      <id>jamailun</id>
-      <name>Timothé ROSAZ</name>
-      <email>timothe.rosaz@middleware-solutions.com</email>
-    </developer>
-    <developer>
-      <id>Emmanuel35</id>
-      <name>Emmanuel LESNE</name>
-      <email>emmanuel.lesne@middleware-solutions.com</email>
+      <id>middleware-editions</id>
+      <name>Middleware Editions</name>
+      <email>dev@middleware-editions.fr</email>
     </developer>
   </developers>
 
   <scm>
     <connection>scm:git:git://github.com/MiddlewareEditions/camel-efr-trace.git</connection>
-    <developerConnection>scm:git:ssh://github.com:user/projet.git</developerConnection>
-    <url>https://github.com/user/projet</url>
+    <developerConnection>scm:git:ssh://github.com:MiddlewareEditions/camel-efr-trace.git</developerConnection>
+    <url>https://github.com/MiddlewareEditions/camel-efr-trace</url>
   </scm>
 
 </project>
