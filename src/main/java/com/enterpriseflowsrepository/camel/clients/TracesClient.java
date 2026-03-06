@@ -16,6 +16,9 @@ import org.slf4j.Logger;
 import java.net.URI;
 import java.util.List;
 
+/**
+ * A client to send traces to EFR.
+ */
 @RequiredArgsConstructor
 public class TracesClient {
 

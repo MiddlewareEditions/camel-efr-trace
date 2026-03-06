@@ -10,6 +10,10 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.time.Instant;
 
+/**
+ * A TokenProvider implementation that fetches tokens from Keycloak using Java's built-in HttpClient. <br/>
+ * The token is cached until it expires, to avoid unnecessary calls to Keycloak.
+ */
 public class JavaTokenProvider implements TokenProvider {
 
   private final URI tokenUrl;

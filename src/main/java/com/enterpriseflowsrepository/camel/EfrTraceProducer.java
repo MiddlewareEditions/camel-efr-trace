@@ -20,6 +20,11 @@ public class EfrTraceProducer extends DefaultProducer {
 
   private final TracesClient client;
 
+  /**
+   * Create a new EfrTraceProducer instance with the given endpoint. <br/>
+   * The producer will use the endpoint configuration to create traces and send them to EFR.
+   * @param endpoint The endpoint associated with this producer. Must not be null.
+   */
   public EfrTraceProducer(EfrTraceEndpoint endpoint) {
     super(endpoint);
     this.endpoint = endpoint;
