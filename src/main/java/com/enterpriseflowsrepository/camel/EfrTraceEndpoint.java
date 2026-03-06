@@ -20,7 +20,7 @@ import org.jetbrains.annotations.NotNull;
     scheme = "efr-trace",
     title = "EFR Trace",
     syntax="efr-trace:status",
-    category = {Category.MONITORING},
+    category = {Category.CLOUD, Category.MONITORING},
     producerOnly = true
 )
 @Getter @Setter
