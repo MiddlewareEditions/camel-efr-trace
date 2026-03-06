@@ -6,7 +6,7 @@
 
   <groupId>com.enterpriseflowsrepository</groupId>
   <artifactId>camel-efr-trace</artifactId>
-  <version>0.0.1-r5</version>
+  <version>0.0.1-r6</version>
   <packaging>jar</packaging>
 
   <name>Camel EFR Trace</name>
@@ -125,12 +125,12 @@
                   <exclude>io.smallrye:*</exclude>
                   <exclude>io.smallrye.config:*</exclude>
                   <exclude>io.smallrye.common:*</exclude>
+                  <exclude>org.objectweb:*</exclude>
 
                   <exclude>org.eclipse.microprofile.config:*</exclude>
-                  <exclude>org.eclipse.microprofile.rest.client:*</exclude>
 
                   <exclude>org.jboss.logging:*</exclude>
-                  <exclude>org.apache.cxf:*</exclude>
+<!--                  <exclude>org.apache.cxf:*</exclude>-->
                 </excludes>
               </artifactSet>
 
