@@ -1,7 +1,5 @@
 package com.enterpriseflowsrepository.camel.exceptions;
 
-import com.enterpriseflowsrepository.api.traces.ApiException;
-import jakarta.ws.rs.ProcessingException;
 import org.jetbrains.annotations.NotNull;
 
 /**

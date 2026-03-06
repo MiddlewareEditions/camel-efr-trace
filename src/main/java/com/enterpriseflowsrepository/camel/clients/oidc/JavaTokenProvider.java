@@ -1,8 +1,7 @@
 package com.enterpriseflowsrepository.camel.clients.oidc;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.jetbrains.annotations.NotNull;
+import org.json.JSONObject;
 
 import java.net.URI;
 import java.net.http.HttpClient;
@@ -20,7 +19,6 @@ public class JavaTokenProvider implements TokenProvider {
   private final String authFormString;
 
   private final HttpClient httpClient;
-  private final ObjectMapper mapper;
 
   // Token cache
   private transient String cachedToken;
@@ -37,7 +35,6 @@ public class JavaTokenProvider implements TokenProvider {
 
     // One instance of HTTP-client and JSON-mapper.
     this.httpClient = HttpClient.newHttpClient();
-    this.mapper = new ObjectMapper();
   }
 
   @Override
@@ -65,11 +62,11 @@ public class JavaTokenProvider implements TokenProvider {
       }
 
       // Parse response
-      JsonNode jsonNode = mapper.readTree(response.body());
-      this.cachedToken = jsonNode.get("access_token").asText();
+      JSONObject json = new JSONObject(response.body());
+      this.cachedToken = json.getString("access_token");
 
       // Compute expiry time based on "expires_in" field (in seconds)
-      long expiresIn = jsonNode.get("expires_in").asLong();
+      long expiresIn = json.getLong("expires_in");
       this.expiryTime = Instant.now().plusSeconds(expiresIn);
     } catch (Exception e) {
       throw new RuntimeException("Impossible de récupérer le jeton OIDC", e);

@@ -1,15 +1,11 @@
 package com.enterpriseflowsrepository.camel.clients;
 
-import com.enterpriseflowsrepository.api.traces.ApiException;
-import com.enterpriseflowsrepository.api.traces.TracesApi;
-import com.enterpriseflowsrepository.api.traces.beans.Trace;
+import com.enterpriseflowsrepository.camel.clients.bean.Trace;
 import com.enterpriseflowsrepository.camel.clients.oidc.JavaTokenProvider;
 import com.enterpriseflowsrepository.camel.clients.oidc.OidcFilter;
 import com.enterpriseflowsrepository.camel.clients.oidc.StaticOidcConfiguration;
 import com.enterpriseflowsrepository.camel.exceptions.EfrApiException;
-import jakarta.ws.rs.ProcessingException;
 import lombok.RequiredArgsConstructor;
-import org.eclipse.microprofile.rest.client.RestClientBuilder;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 
@@ -37,22 +33,6 @@ public class TracesClient {
       throw new EfrApiException(e);
     } catch (ProcessingException e) {
       LOG.error("Processing exception while sending trace: {}.", e.getMessage());
-      throw new EfrApiException(e);
-    }
-  }
-
-  /**
-   * Send multiples traces to EFR.
-   * @param traces The traces to be sent to EFR. Must not be null.
-   */
-  public void sendTrace(@NotNull List<Trace> traces) {
-    try {
-      api.bulkTraces(traces);
-    } catch (ApiException e) {
-      LOG.error("API exception while sending traces: {}", e.getResponse().getStatus());
-      throw new EfrApiException(e);
-    } catch (ProcessingException e) {
-      LOG.error("Processing exception while sending traces: {}.", e.getMessage());
       throw new EfrApiException(e);
     }
   }

@@ -21,14 +21,13 @@
 
     <!-- Versions -->
     <camel.version>4.4.0</camel.version>
-    <efr-traces-openapi.version>3.1.3</efr-traces-openapi.version>
     <apache-commons-text.version>1.15.0</apache-commons-text.version>
+    <org-json.version>20251224</org-json.version>
 
     <lombok.version>1.18.42</lombok.version>
     <jetbrains-annotations.version>26.1.0</jetbrains-annotations.version>
 
     <!-- Plugin versions -->
-    <maven-shade.version>3.6.1</maven-shade.version>
     <maven-source.version>3.4.0</maven-source.version>
     <builder-helper-plugin.version>3.6.1</builder-helper-plugin.version>
     <maven-javadoc.version>3.12.0</maven-javadoc.version>
@@ -69,14 +68,13 @@
       <scope>compile</scope>
     </dependency>
 
-    <!-- EFR -->
-    <dependency>
-      <groupId>com.enterpriseflowsrepository.api</groupId>
-      <artifactId>openapi-traces-client</artifactId>
-      <version>${efr-traces-openapi.version}</version>
-    </dependency>
-
     <!-- Others -->
+    <dependency>
+      <groupId>org.json</groupId>
+      <artifactId>json</artifactId>
+      <version>${org-json.version}</version>
+      <scope>compile</scope>
+    </dependency>
     <dependency>
       <groupId>org.apache.commons</groupId>
       <artifactId>commons-text</artifactId>
@@ -86,78 +84,6 @@
 
   <build>
     <plugins>
-      <!-- Shade EFR dependencies -->
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-shade-plugin</artifactId>
-        <version>${maven-shade.version}</version>
-        <executions>
-          <execution>
-            <phase>package</phase>
-            <goals>
-              <goal>shade</goal>
-            </goals>
-            <configuration>
-              <createDependencyReducedPom>true</createDependencyReducedPom>
-              <filters>
-                <filter>
-                  <artifact>*:*</artifact>
-                  <excludes>
-                    <exclude>META-INF/*.SF</exclude>
-                    <exclude>META-INF/*.DSA</exclude>
-                    <exclude>META-INF/*.RSA</exclude>
-                    <exclude>module-info.class</exclude>
-                    <exclude>META-INF/versions/9/module-info.class</exclude>
-                    <exclude>META-INF/LICENSE*</exclude>
-                    <exclude>META-INF/NOTICE*</exclude>
-                    <exclude>META-INF/DEPENDENCIES</exclude>
-                    <exclude>META-INF/MANIFEST.MF</exclude>
-                  </excludes>
-                </filter>
-              </filters>
-
-              <artifactSet>
-                <excludes>
-                  <exclude>org.apache.camel:*</exclude>
-                  <exclude>org.slf4j:*</exclude>
-                  <exclude>org.projectlombok:lombok</exclude>
-
-                  <exclude>io.smallrye:*</exclude>
-                  <exclude>io.smallrye.config:*</exclude>
-                  <exclude>io.smallrye.common:*</exclude>
-                  <exclude>org.objectweb:*</exclude>
-
-                  <exclude>org.eclipse.microprofile.config:*</exclude>
-
-                  <exclude>org.jboss.logging:*</exclude>
-<!--                  <exclude>org.apache.cxf:*</exclude>-->
-                </excludes>
-              </artifactSet>
-
-              <relocations>
-                <relocation>
-                  <pattern>com.enterpriseflowsrepository.api</pattern>
-                  <shadedPattern>com.enterpriseflowsrepository.shaded.api</shadedPattern>
-                </relocation>
-              </relocations>
-
-              <transformers>
-                <transformer implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer"/>
-                <transformer implementation="org.apache.maven.plugins.shade.resource.AppendingTransformer">
-                  <resource>META-INF/cxf/bus-extensions.txt</resource>
-                </transformer>
-                <transformer implementation="org.apache.maven.plugins.shade.resource.AppendingTransformer">
-                  <resource>META-INF/spring.handlers</resource>
-                </transformer>
-                <transformer implementation="org.apache.maven.plugins.shade.resource.AppendingTransformer">
-                  <resource>META-INF/spring.schemas</resource>
-                </transformer>
-              </transformers>
-            </configuration>
-          </execution>
-        </executions>
-      </plugin>
-
       <!-- Camel generator -->
       <plugin>
         <groupId>org.apache.camel</groupId>

@@ -1,7 +1,7 @@
 package com.enterpriseflowsrepository.camel;
 
-import com.enterpriseflowsrepository.api.traces.beans.Trace;
 import com.enterpriseflowsrepository.camel.clients.TracesClient;
+import com.enterpriseflowsrepository.camel.clients.bean.Trace;
 import com.enterpriseflowsrepository.camel.traces.TracesHelper;
 import org.apache.camel.Exchange;
 import org.apache.camel.support.DefaultProducer;

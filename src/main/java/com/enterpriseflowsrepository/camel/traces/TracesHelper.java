@@ -1,21 +1,21 @@
 package com.enterpriseflowsrepository.camel.traces;
 
-import com.enterpriseflowsrepository.api.traces.beans.*;
-import com.enterpriseflowsrepository.api.traces.beans.Exception;
 import com.enterpriseflowsrepository.camel.EfrTraceEndpoint;
+import com.enterpriseflowsrepository.camel.clients.bean.KeyValue;
+import com.enterpriseflowsrepository.camel.clients.bean.PartException;
+import com.enterpriseflowsrepository.camel.clients.bean.Trace;
 import org.apache.camel.Exchange;
-import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.swing.*;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.UUID;
 import java.util.function.Supplier;
 import java.util.regex.PatternSyntaxException;
 
@@ -39,17 +39,6 @@ public final class TracesHelper {
     return exchange.getIn().getHeader(key, String.class);
   }
 
-  /**
-   * Find a value in the exchange, first looking in properties, then in headers. Returns defaultValue if not found.
-   * @param exchange The exchange to look into.
-   * @param key The key to look for.
-   * @param defaultValue The default value to return if not found.
-   * @return The value found, or defaultValue if not found.
-   */
-  public static @NotNull String findValue(@NotNull Exchange exchange, @NotNull String key, @NotNull String defaultValue) {
-    return Objects.requireNonNullElse(findValue(exchange, key), defaultValue);
-  }
-
   /** Find a value in the exchange, first looking in properties, then in headers. Returns the result of defaultSupplier if not found.
    * @param exchange The exchange to look into.
    * @param key The key to look for.
@@ -69,38 +58,30 @@ public final class TracesHelper {
   public static @NotNull Trace traceFromExchange(@NotNull Exchange exchange, @NotNull EfrTraceEndpoint endpoint) {
     TracesEnvironnement config = new TracesEnvironnement();
 
-    Trace trace = new Trace()
-        .state(endpoint.getLevel().toStatus())
-        .environment(config.getEnvironment());
+    Trace trace = new Trace();
+    trace.setState(endpoint.getLevel());
+    trace.setEnvironment(config.getEnvironment());
 
     // Headers and body
-    trace.setMessage(new Message()
-        .body(exchange.getIn().getBody(String.class))
-        .id(UUID.randomUUID().toString())
-        .created(OffsetDateTime.now())
-        .level(endpoint.getLevel().toStatus())
-        .headers(readHeaders(exchange, config.getMaxHeadersSize()))
-    );
+    trace.getMessage().setBody(exchange.getIn().getBody(String.class));
+    readHeaders(exchange, config.getMaxHeadersSize()).forEach(h -> trace.getMessage().getHeaders().add(h));
 
     // Route context
-    trace.setRoute(new Route()
-        .id(config.getRouteId())
-        .name(config.getRouteName())
-        .description(findValue(exchange, "description"))
-        .step(endpoint.getStepOrProperty(exchange))
-        .version(config.getRouteVersion())
-    );
+    trace.getRoute().setId(config.getRouteId());
+    trace.getRoute().setName(config.getRouteName());
+    trace.getRoute().setDescription(findValue(exchange, "description"));
+    trace.getRoute().setStep(endpoint.getStepOrProperty(exchange));
+    trace.getRoute().setVersion(config.getRouteVersion());
 
     // "Hardware" context
-    trace.setInfrastructure(new Infrastructure()
-        .datacenter(config.getRouteDatacenter())
-        .hostname(exchange.getContext().resolveLanguage("simple")
-            .createExpression("${hostname}")
-            .evaluate(exchange, String.class))
-        .instance(config.getApplicationName()));
+    trace.getInfrastructure().setDatacenter(config.getRouteDatacenter());
+    trace.getInfrastructure().setInstance(config.getApplicationName());
+    trace.getInfrastructure().setHostname(exchange.getContext().resolveLanguage("simple")
+        .createExpression("${hostname}")
+        .evaluate(exchange, String.class));
 
     // Business references
-    trace.setBusiness(readBusinessValues(exchange, config.getBusinessRule()));
+    readBusinessValues(exchange, config.getBusinessRule()).forEach(trace.getBusiness()::add);
 
     // Exception context
     trace.setException(readException(exchange, config));
@@ -108,24 +89,24 @@ public final class TracesHelper {
     return trace;
   }
 
-  private static @NotNull List<Key> readHeaders(@NotNull Exchange exchange, int sizeMax) {
-    List<Key> headers = new ArrayList<>();
+  private static @NotNull List<KeyValue> readHeaders(@NotNull Exchange exchange, int sizeMax) {
+    List<KeyValue> headers = new ArrayList<>();
     for (var entry : exchange.getIn().getHeaders().entrySet()) {
       if(entry.getValue() == null) {
-        headers.add(new Key().name(entry.getKey()));
+        headers.add(new KeyValue(entry.getKey()));
         continue;
       }
 
       String value = entry.getValue().toString();
       if (value.length() > sizeMax)
         value = value.substring(0, sizeMax);
-      headers.add(new Key().name(entry.getKey()).value(value));
+      headers.add(new KeyValue(entry.getKey(), value));
     }
     return headers;
   }
 
-  private static @NotNull List<Data> readBusinessValues(@NotNull Exchange exchange, @Nullable String businessRule) {
-    List<Data> values = new ArrayList<>();
+  private static @NotNull List<KeyValue> readBusinessValues(@NotNull Exchange exchange, @Nullable String businessRule) {
+    List<KeyValue> values = new ArrayList<>();
     if (businessRule == null || businessRule.isEmpty()) return values;
 
     // Each rule is on format "key=valueRef"
@@ -143,26 +124,27 @@ public final class TracesHelper {
 
       // Add data entry
       if (value != null) {
-        values.add(new Data().name(key).value(value));
+        values.add(new KeyValue(key, value));
       }
     }
 
     return values;
   }
 
-  private static @Nullable Exception readException(@NotNull Exchange exchange, @NotNull TracesEnvironnement config) {
+  private static @Nullable PartException readException(@NotNull Exchange exchange, @NotNull TracesEnvironnement config) {
     if (exchange.getProperty(Exchange.EXCEPTION_CAUGHT) == null)
       return null;
     var javaException = exchange.getProperty(Exchange.EXCEPTION_CAUGHT, java.lang.Exception.class);
 
     // Stacktrace + exception class name
     int maxStackSize = config.getMaxStackTraceSize();
-    String rawStack = ExceptionUtils.getStackTrace(javaException);
+    String rawStack = getStackTrace(javaException);
     if (rawStack.length() > maxStackSize)
       rawStack = rawStack.substring(0, maxStackSize - 3) + "...";
-    Exception output = new Exception().stacktrace(rawStack)
-        .when(OffsetDateTime.now())
-        .className(javaException.getClass().getName());
+    PartException output = new PartException();
+    output.setStackTrace(rawStack);
+    output.setWhen(OffsetDateTime.now());
+    output.setClassName(javaException.getClass().getName());
 
     // Exception message (details)
     String exMessage = findValue(exchange, "exception-message", javaException::getMessage);
@@ -181,7 +163,7 @@ public final class TracesHelper {
     return output;
   }
 
-  private static void overrideWithCustomErrorCode(@NotNull Exception exception, @NotNull TracesEnvironnement config) {
+  private static void overrideWithCustomErrorCode(@NotNull PartException exception, @NotNull TracesEnvironnement config) {
     for(String property: config.getPropertyNames()) {
       // Only keep one specific format
       if(!property.matches("traces\\.custom-error-codes\\.(.+)")) continue;
@@ -204,4 +186,16 @@ public final class TracesHelper {
     // No custom error code.
   }
 
+  /**
+   * From {@code org.apache.commons.lang3.exception.ExceptionUtils}.
+   * @param throwable throwable to get the stack trace from, may be null.
+   * @return the stack trace as a String, empty string if throwable is null.
+   */
+  private static @NotNull String getStackTrace(@Nullable Throwable throwable) {
+    if (throwable == null)
+      return "";
+    StringWriter sw = new StringWriter();
+    throwable.printStackTrace(new PrintWriter(sw, true));
+    return sw.toString();
+  }
 }

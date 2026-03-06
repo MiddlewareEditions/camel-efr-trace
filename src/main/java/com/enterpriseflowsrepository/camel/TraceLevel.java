@@ -2,8 +2,6 @@ package com.enterpriseflowsrepository.camel;
 
 import org.jetbrains.annotations.NotNull;
 
-import java.util.Locale;
-
 /**
  * Type of trace level.
  */
