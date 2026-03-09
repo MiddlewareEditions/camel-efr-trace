@@ -1,24 +1,24 @@
 package com.enterpriseflowsrepository.camel.clients.oidc;
 
-import jakarta.ws.rs.client.ClientRequestContext;
-import jakarta.ws.rs.client.ClientRequestFilter;
-import jakarta.ws.rs.core.HttpHeaders;
 import lombok.RequiredArgsConstructor;
 import org.jetbrains.annotations.NotNull;
+
+import java.net.http.HttpRequest;
+import java.util.function.Consumer;
 
 /**
  * Filter to add the OIDC access token to outgoing requests.
  */
 @RequiredArgsConstructor
-public class OidcFilter implements ClientRequestFilter {
+public class OidcHandler implements Consumer<HttpRequest.Builder> {
 
   private final TokenProvider tokenProvider;
 
   @Override
-  public void filter(@NotNull ClientRequestContext request) {
+  public void accept(@NotNull HttpRequest.Builder request) {
     // Récupère le token (depuis le cache ou via un nouvel appel)
     String token = tokenProvider.getAccessToken();
-    request.getHeaders().add(HttpHeaders.AUTHORIZATION, "Bearer " + token);
+    request.header("Authorization", "Bearer " + token);
   }
 
 }

@@ -1,16 +1,20 @@
 package com.enterpriseflowsrepository.camel.clients;
 
 import com.enterpriseflowsrepository.camel.clients.bean.Trace;
-import com.enterpriseflowsrepository.camel.clients.oidc.JavaTokenProvider;
-import com.enterpriseflowsrepository.camel.clients.oidc.OidcFilter;
-import com.enterpriseflowsrepository.camel.clients.oidc.StaticOidcConfiguration;
+import com.enterpriseflowsrepository.camel.clients.oidc.*;
 import com.enterpriseflowsrepository.camel.exceptions.EfrApiException;
 import lombok.RequiredArgsConstructor;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 
+import java.io.IOException;
 import java.net.URI;
-import java.util.List;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
+import java.nio.charset.StandardCharsets;
+import java.time.Duration;
+import java.util.function.Consumer;
 
 /**
  * A client to send traces to EFR.
@@ -19,20 +23,40 @@ import java.util.List;
 public class TracesClient {
 
   private static final Logger LOG = org.slf4j.LoggerFactory.getLogger(TracesClient.class);
-  private final TracesApi api;
+
+  private final StaticEndpointConfiguration config;
+  private final HttpClient client;
+  private final Consumer<HttpRequest.Builder> requestCustomizer;
 
   /**
    * Send one trace to EFR.
    * @param trace The trace to be sent to EFR. Must not be null.
    */
   public void sendTrace(@NotNull Trace trace) {
+    var builder = HttpRequest.newBuilder()
+        .uri(URI.create(config.hostname() + "/api/traces"))
+        .header("Content-Type", "application/json")
+        .POST(HttpRequest.BodyPublishers.ofString(trace.toJSON().toString()));
+
+    // Auth
+    requestCustomizer.accept(builder);
+
+    HttpRequest request = builder.build();
+
     try {
-      api.addTrace(trace);
-    } catch (ApiException e) {
-      LOG.error("API exception while sending trace: {}", e.getResponse().getStatus());
-      throw new EfrApiException(e);
-    } catch (ProcessingException e) {
-      LOG.error("Processing exception while sending trace: {}.", e.getMessage());
+      LOG.debug("Sending trace to EFR.");
+      LOG.debug("- URL: '{}'.", request.uri());
+      LOG.debug("- Method: '{}'.", request.method());
+      LOG.debug("- Headers: '{}'.", request.headers());
+      LOG.debug("- Body: '{}'.", trace.toJSON());
+
+      HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString(StandardCharsets.UTF_8));
+      if(response.statusCode() >= 300) {
+        LOG.error("Failed to send trace. Status code: {}, Response body: {}", response.statusCode(), response.body());
+        throw new EfrApiException(response.statusCode());
+      }
+
+    } catch (IOException | InterruptedException e) {
       throw new EfrApiException(e);
     }
   }
@@ -43,13 +67,20 @@ public class TracesClient {
    */
   public static @NotNull TracesClient initialize() {
     var config = StaticOidcConfiguration.fromProperties();
+    var host = StaticEndpointConfiguration.fromProperties();
     var tokenProvider = new JavaTokenProvider(config);
 
-    var api = RestClientBuilder.newBuilder()
-        .baseUri(URI.create("https://localhost:8080"))
-        .register(new OidcFilter(tokenProvider))
-        .build(TracesApi.class);
-    return new TracesClient(api);
+    HttpClient client = HttpClient.newBuilder()
+        .connectTimeout(Duration.ofSeconds(10))
+        .sslContext(EmptyTrustManager.getEmptySSLContext()) // ignore security
+        .followRedirects(HttpClient.Redirect.NORMAL)
+        .build();
+
+    return new TracesClient(
+        host,
+        client,
+        new OidcHandler(tokenProvider)
+    );
   }
 
 }
