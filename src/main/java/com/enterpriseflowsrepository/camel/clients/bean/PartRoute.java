@@ -4,6 +4,9 @@ import lombok.Data;
 import org.jetbrains.annotations.NotNull;
 import org.json.JSONObject;
 
+/**
+ * Class representing a {@code route} part of a trace.
+ */
 @Data
 public class PartRoute implements JSONConvertible {
 

@@ -4,6 +4,9 @@ import lombok.Data;
 import org.jetbrains.annotations.NotNull;
 import org.json.JSONObject;
 
+/**
+ * Class representing the {@code infrastructure} field of a trace.
+ */
 @Data
 public class PartInfrastructure implements JSONConvertible {
 

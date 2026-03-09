@@ -8,6 +8,9 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * A trace sent to EFR.
+ */
 @Data
 public class Trace implements JSONConvertible {
 

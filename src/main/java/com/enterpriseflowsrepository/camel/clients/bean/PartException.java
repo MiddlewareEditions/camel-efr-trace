@@ -6,6 +6,9 @@ import org.json.JSONObject;
 
 import java.time.OffsetDateTime;
 
+/**
+ * Class representing the {@code exception} field of a trace.
+ */
 @Data
 public class PartException implements JSONConvertible {
 
