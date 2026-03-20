@@ -167,7 +167,7 @@ public final class TracesHelper {
     for(String property: config.getPropertyNames()) {
       // Only keep one specific format
       if(!property.matches("traces\\.custom-error-codes\\.(.+)")) continue;
-      LOG.info("Found property: '{}'.", property);
+      LOG.debug("Found property: '{}'.", property);
 
       // Test regex
       String contentToTest = config.getValue(property);
@@ -176,7 +176,7 @@ public final class TracesHelper {
           String[] parts = property.split("\\.");
           String code = parts[parts.length - 1];
           exception.setCode(code);
-          LOG.info("Property applied to route. Code is '{}'.", code);
+          LOG.debug("Property applied to route. Code is '{}'.", code);
           return;
         }
       } catch (PatternSyntaxException e) {
