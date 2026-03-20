@@ -21,11 +21,14 @@ public class TracesEnvironnement {
   }
 
   /**
-   * Get the environment name, as defined in the configuration.
+   * Get the environment name, as defined in the configuration.<br/>
+   * The configuration expects {@code efr.trace-environment} and will fall back on {@code efr.environment} otherwise.
    * @return the environment name.
    */
-  public @NotNull String getEnvironment() {
-    return getValue("environment");
+  public @NotNull String getTraceEnvironment() {
+    return config.getOptionalValue("efr.trace-environment", String.class)
+        .or(() -> config.getOptionalValue("efr.environment", String.class))
+        .orElseThrow();
   }
 
   /**

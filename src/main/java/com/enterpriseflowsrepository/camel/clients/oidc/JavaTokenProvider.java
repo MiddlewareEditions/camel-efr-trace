@@ -15,6 +15,8 @@ import java.time.Instant;
  */
 public class JavaTokenProvider implements TokenProvider {
 
+  private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(JavaTokenProvider.class);
+
   private final URI tokenUrl;
   private final String authFormString;
 
@@ -33,14 +35,18 @@ public class JavaTokenProvider implements TokenProvider {
     this.tokenUrl = oidcConfiguration.getAuthURI();
     this.authFormString = oidcConfiguration.getAuthForm();
 
+    LOG.debug("Created JavaTokenProvider. TokenUrl = {}, authFormString = {}.", tokenUrl, authFormString);
+
     // One instance of HTTP-client and JSON-mapper.
     this.httpClient = HttpClient.newHttpClient();
   }
 
   @Override
   public synchronized @NotNull String getAccessToken() {
+    LOG.trace("Requested access-token.");
     // On vérifie si le token est null ou s'il expire dans moins de 10 secondes (marge de sécurité)
     if (cachedToken == null || Instant.now().plusSeconds(10).isAfter(expiryTime)) {
+      LOG.trace("Token unset or expired. Fetching it...");
       fetchNewToken();
     }
     return cachedToken;
@@ -57,12 +63,14 @@ public class JavaTokenProvider implements TokenProvider {
     try {
       // Call keycloak
       HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+      LOG.debug("JWT refresh. response code = {}.", response.statusCode());
       if (response.statusCode() != 200) {
         throw new RuntimeException("Could not authenticate to Keycloak. Code: " + response.statusCode() + ".");
       }
 
       // Parse response
       JSONObject json = new JSONObject(response.body());
+      LOG.debug("JWT refresh. response body = {}.", json);
       this.cachedToken = json.getString("access_token");
 
       // Compute expiry time based on "expires_in" field (in seconds)

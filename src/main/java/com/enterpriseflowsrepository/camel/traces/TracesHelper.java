@@ -60,14 +60,14 @@ public final class TracesHelper {
 
     Trace trace = new Trace();
     trace.setState(endpoint.getLevel());
-    trace.setEnvironment(config.getEnvironment());
+    trace.setEnvironment(config.getTraceEnvironment());
 
     // Headers and body
     trace.getMessage().setBody(exchange.getIn().getBody(String.class));
     readHeaders(exchange, config.getMaxHeadersSize()).forEach(h -> trace.getMessage().getHeaders().add(h));
 
     // Route context
-    trace.getRoute().setId(config.getRouteId());
+    trace.getRoute().setId(findValue(exchange, "route-id", config::getRouteId));
     trace.getRoute().setName(config.getRouteName());
     trace.getRoute().setDescription(findValue(exchange, "description"));
     trace.getRoute().setStep(endpoint.getStepOrProperty(exchange));

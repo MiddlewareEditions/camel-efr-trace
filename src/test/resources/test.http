@@ -1,0 +1,42 @@
+POST https://integration.enterpriseflowsrepository.org/integration/api/traces/1/traces
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJSUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICJQeG1wWDJoNEFsc1BaYW9kRjlMWllYZDgwM1RVT1k3WHZOZWt4UkVQeHZBIn0.eyJleHAiOjE3NzQwMjA5MTIsImlhdCI6MTc3NDAxOTExMiwianRpIjoiODhjMmI4MzEtM2ZmNS00OWVjLWFkMjUtNzQzZThhYWFkOTEwIiwiaXNzIjoiaHR0cHM6Ly9pbnRlZ3JhdGlvbi5lbnRlcnByaXNlZmxvd3NyZXBvc2l0b3J5Lm9yZy9hdXRoL3JlYWxtcy9lZnIiLCJhdWQiOlsicmVhbG0tbWFuYWdlbWVudCIsImFjY291bnQiXSwic3ViIjoiNGYwNGJlNWEtODljMS00MjhhLWJjODgtNDFmYmM0MjVhNWU1IiwidHlwIjoiQmVhcmVyIiwiYXpwIjoiYmFja2VuZC10b29scyIsInNpZCI6IjIyZGE1NWU2LTY0ODItNGY0YS04ZDFkLTQzMjJkNTNkYzJjYyIsInJlYWxtX2FjY2VzcyI6eyJyb2xlcyI6WyJlZnJfcmVwbGF5X3dyaXRlIiwiZWZyX2NhcnRvX2FjY2VzcyIsImVmcl9kZWNyeXB0IiwiZWZyX3Byb3BlcnRpZXNfd3JpdGUiLCJlZnJfdGFibGVzX2FjY2VzcyIsImVmcl9jYXJ0b193cml0ZSIsImVmcl9ub3RpZnNfc2VuZCIsImRlZmF1bHQtcm9sZXMtZWZyIiwiZWZyX2RlcGxveW1lbnRzIiwiZWZyX25ydF93cml0ZSIsImVmcl9wcm9wZXJ0aWVzX2FjY2VzcyIsImVmcl9ucnRfYWNjZXNzIiwibGFuZ2Zsb3ctYWRtaW4iLCJlZnJfcmVwbGF5X2FjY2VzcyJdfSwicmVzb3VyY2VfYWNjZXNzIjp7InJlYWxtLW1hbmFnZW1lbnQiOnsicm9sZXMiOlsidmlldy11c2VycyIsInF1ZXJ5LWdyb3VwcyIsInF1ZXJ5LXVzZXJzIl19LCJhY2NvdW50Ijp7InJvbGVzIjpbIm1hbmFnZS1hY2NvdW50IiwibWFuYWdlLWFjY291bnQtbGlua3MiLCJ2aWV3LXByb2ZpbGUiXX19LCJzY29wZSI6ImVtYWlsIHJvbGVzIHByb2ZpbGUiLCJlbWFpbF92ZXJpZmllZCI6dHJ1ZSwibmFtZSI6IkFsaWNlIERFUyBNRVJWRUlMTEVTIiwicHJlZmVycmVkX3VzZXJuYW1lIjoiYWxpY2UiLCJnaXZlbl9uYW1lIjoiQWxpY2UiLCJmYW1pbHlfbmFtZSI6IkRFUyBNRVJWRUlMTEVTIiwiZW1haWwiOiJhbGljZUBlbnRlcnByaXNlZmxvd3NyZXBvc2l0b3J5Lm9yZyJ9.PedDoisUf3p18AUKF325hlxUSLkKTnKbxE5UxSeWmUBtVq_oKa902N7odYus4EH_7EuP6HWG-hZUcT8iAWRuStvpla8WxXCKa4tkrr2btEVhezdS0Ijbp0aoLORCvCXyHoQLLa27V7itAk72o-s5Qbon_hm0yt1J57dUPKusICstQ_IlrXdlMua1bTnLyfa4-H_oPoInArVvfS9iZKpv3sna5d4r5cQXzvPuVWna30y6kgJ-yst4rJfzCn6vLkmH54T9YVYWi9ul4ea0y5H6DFpPycCmBDEbxh13D5a2txmT605jVBxjEINT5DZHtotFuvJdfWgwVtyk8YGfHi_FPg
+
+{
+  "environment": "integration",
+  "state": "info",
+  "route": {
+    "name": "test-connector",
+    "description": "ici ça décrit",
+    "step": "STEP DEMO",
+    "id": "test_id_overwritten",
+    "version": "1.0.0"
+  },
+  "business": [
+    {
+      "name": "Client",
+      "value": "client_0001"
+    },
+    {
+      "name": "toto",
+      "value": "Ah, ma tente attend le temps"
+    }
+  ],
+  "infrastructure": {
+    "hostname": "test-connector-5b769d7b7d-79f79",
+    "instance": "camel-k-integration",
+    "datacenter": "test-cluster"
+  },
+  "message": {
+    "headers": [
+      {
+        "name": "totoHeader",
+        "value": "SALUT LE header swag"
+      }
+    ],
+    "created": "2026-03-20T15:02:10.187262681Z",
+    "id": "ab37fbd6-e484-4881-8b44-26d2b9ed00e1",
+    "type": "technical",
+    "body": "SALUT LE BODY"
+  }
+}

@@ -8,9 +8,11 @@ import org.jetbrains.annotations.NotNull;
 /**
  * Immutable configuration class for EFR endpoint.
  * @param hostname EFR hostname.
+ * @param environment EFR environment.
  */
 public record StaticEndpointConfiguration(
-    @NotNull String hostname
+    @NotNull String hostname,
+    @NotNull String environment
 ) {
 
   /**
@@ -22,6 +24,7 @@ public record StaticEndpointConfiguration(
     Config config = ConfigProvider.getConfig();
     String rawHost = config.getValue("efr.hostname", String.class);
     String hostname = rawHost.endsWith("/") ? rawHost.substring(0, rawHost.length() - 1) : rawHost;
-    return new StaticEndpointConfiguration(hostname);
+    String environment = config.getValue("efr.environment", String.class);
+    return new StaticEndpointConfiguration(hostname, environment);
   }
 }

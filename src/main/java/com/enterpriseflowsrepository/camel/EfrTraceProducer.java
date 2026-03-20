@@ -33,8 +33,6 @@ public class EfrTraceProducer extends DefaultProducer {
 
   @Override
   public void process(@NotNull Exchange exchange) {
-    LOG.info("Sending trace to EFR with status {}.", endpoint.getLevel());
-
     // Create a trace
     Trace trace = TracesHelper.traceFromExchange(exchange, endpoint);
 

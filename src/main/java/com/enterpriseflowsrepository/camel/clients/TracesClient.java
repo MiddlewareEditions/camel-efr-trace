@@ -33,8 +33,9 @@ public class TracesClient {
    * @param trace The trace to be sent to EFR. Must not be null.
    */
   public void sendTrace(@NotNull Trace trace) {
+    LOG.info("#sendTrace TracesClient >> {}.", trace.toJSON());
     var builder = HttpRequest.newBuilder()
-        .uri(URI.create(config.hostname() + "/api/traces"))
+        .uri(URI.create(config.hostname() + "/" + config.environment() + "/api/traces/1/traces"))
         .header("Content-Type", "application/json")
         .POST(HttpRequest.BodyPublishers.ofString(trace.toJSON().toString()));
 
@@ -57,6 +58,7 @@ public class TracesClient {
       }
 
     } catch (IOException | InterruptedException e) {
+      LOG.error("Failed to send trace to EFR.", e);
       throw new EfrApiException(e);
     }
   }
@@ -69,6 +71,9 @@ public class TracesClient {
     var config = StaticOidcConfiguration.fromProperties();
     var host = StaticEndpointConfiguration.fromProperties();
     var tokenProvider = new JavaTokenProvider(config);
+
+    LOG.info("Initializing TracesClient with config: {}.", config);
+    LOG.info("Initializing TracesClient with host: {}.", host);
 
     HttpClient client = HttpClient.newBuilder()
         .connectTimeout(Duration.ofSeconds(10))
