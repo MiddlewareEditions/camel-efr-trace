@@ -1,6 +1,7 @@
 package com.enterpriseflowsrepository.camel;
 
 import org.jetbrains.annotations.NotNull;
+import java.util.Set;
 
 /**
  * Type of trace level.
@@ -8,16 +9,22 @@ import org.jetbrains.annotations.NotNull;
 public enum TraceLevel {
 
   /** Normal INFO trace. */
-  INFO,
+  INFO("info", "information", "i", "normal", "nominal"),
 
   /** Signal a non-blocking issue : WARNING trace. */
-  WARNING,
+  WARNING("warning", "warn", "avertissement", "w"),
 
   /** Signal a blocking issue : ERROR trace. */
-  ERROR,
+  ERROR("error", "erreur", "fatal", "err", "danger", "e"),
 
   /** Signal a finalized, successful operation : SUCCESS trace. */
-  SUCCESS;
+  SUCCESS("success", "good", "s");
+
+  private final Set<String> aliases;
+
+  TraceLevel(@NotNull String @NotNull... aliases) {
+    this.aliases = Set.of(aliases);
+  }
 
   /**
    * Convert a string to a TraceLevel enum value. The comparison is case-insensitive.
@@ -27,7 +34,7 @@ public enum TraceLevel {
    */
   public static @NotNull TraceLevel fromString(@NotNull String level) {
     for (TraceLevel traceLevel : TraceLevel.values()) {
-      if (traceLevel.name().equalsIgnoreCase(level)) {
+      if (traceLevel.aliases.contains(level.toLowerCase())) {
         return traceLevel;
       }
     }
@@ -36,7 +43,7 @@ public enum TraceLevel {
 
   /**
    * Get the expected EFR format.
-   * @return a EFR-friendly level format.
+   * @return an EFR-friendly level format.
    */
   public @NotNull String toStatus() {
     return name().toLowerCase();
