@@ -1,0 +1,34 @@
+apiVersion: camel.apache.org/v1
+kind: Kamelet
+metadata:
+  name: efr-trace
+  annotations:
+    camel.apache.org/provider: "Middleware Editions"
+    camel.apache.org/catalog.version: "0.1.0"
+  namespace: kamel-2-9-0
+  labels:
+    camel.apache.org/kamelet.type: "sink"
+spec:
+  definition:
+    title: "EFR Trace Bridge"
+    description: "Bridge to custom JAR component"
+    type: object
+    # Expected properties. "backend" should NOT be overwritten by the user, but "level" should be.
+    properties:
+      backend:
+        title: Backend
+        description: "The backend to use for the trace."
+        type: string
+        default: "efr-trace"
+      level:
+        title: Level
+        description: "The level to use for the trace."
+        type: string
+        default: "info"
+  # Route description
+  template:
+    from:
+      uri: "kamelet:source"
+      # Call the backend using the trace-level as argument
+      steps:
+        - toD: "{{backend}}:{{level}}"
