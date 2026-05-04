@@ -6,7 +6,7 @@
 
   <groupId>com.enterpriseflowsrepository</groupId>
   <artifactId>camel-efr-trace</artifactId>
-  <version>0.0.1-r9</version>
+  <version>0.1.0</version>
   <packaging>jar</packaging>
 
   <name>Camel EFR Trace</name>
